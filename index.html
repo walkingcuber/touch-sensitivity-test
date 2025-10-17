@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>觸控靈敏度測試</title>
+  <style>
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      background: #111;
+      color: white;
+      font-family: "Microsoft JhengHei", sans-serif;
+      font-size: 2em;
+    }
+    .area {
+      display: flex;
+      gap: 2rem;
+    }
+    .block {
+      width: 150px;
+      height: 150px;
+      background: #333;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 10px;
+      user-select: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="area">
+    <div id="a" class="block">A區</div>
+    <div id="b" class="block">B區</div>
+  </div>
+  <p id="status">狀態：等待觸控</p>
+
+  <script>
+    const a = document.getElementById("a");
+    const b = document.getElementById("b");
+    const status = document.getElementById("status");
+
+    let aTouch = false;
+    let bTouch = false;
+    let timer = null;
+
+    function updateStatus() {
+      if (aTouch && bTouch) {
+        a.style.color = b.style.color = "yellow";
+        status.textContent = "狀態：A區與B區同時按下";
+        timer = setTimeout(() => {
+          // 一秒內未放開任何一方則維持
+        }, 1000);
+      } else {
+        clearTimeout(timer);
+        a.style.color = b.style.color = "white";
+        status.textContent = "狀態：等待觸控";
+      }
+    }
+
+    function setTouch(area, state) {
+      if (area === "a") aTouch = state;
+      if (area === "b") bTouch = state;
+      updateStatus();
+    }
+
+    ["mousedown", "touchstart"].forEach(evt => {
+      a.addEventListener(evt, () => setTouch("a", true));
+      b.addEventListener(evt, () => setTouch("b", true));
+    });
+
+    ["mouseup", "mouseleave", "touchend", "touchcancel"].forEach(evt => {
+      a.addEventListener(evt, () => setTouch("a", false));
+      b.addEventListener(evt, () => setTouch("b", false));
+    });
+  </script>
+</body>
+</html>
