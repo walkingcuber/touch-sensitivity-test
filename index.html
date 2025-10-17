@@ -1,82 +1,144 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>觸控靈敏度測試</title>
-  <style>
-    body {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-      background: #111;
-      color: white;
-      font-family: "Microsoft JhengHei", sans-serif;
-      font-size: 2em;
-    }
-    .area {
-      display: flex;
-      gap: 2rem;
-    }
-    .block {
-      width: 150px;
-      height: 150px;
-      background: #333;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 10px;
-      user-select: none;
-    }
-  </style>
+<meta charset="UTF-8">
+<title>魔術方塊計時器</title>
+<style>
+  body { font-family: Arial, sans-serif; padding: 20px; }
+  #timer { font-size: 48px; margin-bottom: 10px; }
+  #scramble { margin-bottom: 10px; }
+  button { margin: 5px; padding: 10px; }
+  ul { list-style: none; padding: 0; }
+  li { margin-bottom: 5px; }
+</style>
 </head>
 <body>
-  <div class="area">
-    <div id="a" class="block">A區</div>
-    <div id="b" class="block">B區</div>
-  </div>
-  <p id="status">狀態：等待觸控</p>
 
-  <script>
-    const a = document.getElementById("a");
-    const b = document.getElementById("b");
-    const status = document.getElementById("status");
+<div id="timer">0.000</div>
+<div id="scramble"></div>
+<div id="hint">按住空白鍵準備</div>
 
-    let aTouch = false;
-    let bTouch = false;
-    let timer = null;
+<button id="startStopBtn">開始 / 停止</button>
+<button id="confirmBtn">確認時間</button>
+<button id="plus2Btn">+2</button>
+<button id="dnfBtn">DNF</button>
+<button id="clearBtn">清除歷史</button>
 
-    function updateStatus() {
-      if (aTouch && bTouch) {
-        a.style.color = b.style.color = "yellow";
-        status.textContent = "狀態：A區與B區同時按下";
-        timer = setTimeout(() => {
-          // 一秒內未放開任何一方則維持
-        }, 1000);
-      } else {
-        clearTimeout(timer);
-        a.style.color = b.style.color = "white";
-        status.textContent = "狀態：等待觸控";
-      }
-    }
+<h3>歷史紀錄</h3>
+<ul id="history"></ul>
 
-    function setTouch(area, state) {
-      if (area === "a") aTouch = state;
-      if (area === "b") bTouch = state;
-      updateStatus();
-    }
+<script>
+// === 模擬 generateScramble ===
+function generateScramble() {
+  const moves = ["R","L","U","D","F","B"];
+  let scramble = [];
+  for(let i=0;i<20;i++){
+    scramble.push(moves[Math.floor(Math.random()*moves.length)]);
+  }
+  return scramble.join(" ");
+}
 
-    ["mousedown", "touchstart"].forEach(evt => {
-      a.addEventListener(evt, () => setTouch("a", true));
-      b.addEventListener(evt, () => setTouch("b", true));
-    });
+// === 計時器邏輯 ===
+let timerDisplay = document.getElementById("timer");
+let scrambleDisplay = document.getElementById("scramble");
+let hintDisplay = document.getElementById("hint");
+let historyList = document.getElementById("history");
 
-    ["mouseup", "mouseleave", "touchend", "touchcancel"].forEach(evt => {
-      a.addEventListener(evt, () => setTouch("a", false));
-      b.addEventListener(evt, () => setTouch("b", false));
-    });
-  </script>
+let times = JSON.parse(localStorage.getItem("cubeTimes")) || [];
+let timerInterval = null;
+let startTime = 0;
+let isRunning = false;
+let isReady = false;
+let isInspecting = false;
+let isWaitingForConfirmation = false;
+let lastSolve = null;
+let currentScramble = generateScramble();
+
+scrambleDisplay.textContent = currentScramble;
+
+function saveTimes() {
+  localStorage.setItem("cubeTimes", JSON.stringify(times));
+  renderHistory();
+}
+
+function renderHistory() {
+  historyList.innerHTML = "";
+  times.forEach((record, index) => {
+    const li = document.createElement("li");
+    let display = record.time/1000;
+    if(record.penalty==="DNF") display = "DNF";
+    if(record.penalty==="+2") display = (record.time/1000) + "+";
+    li.textContent = `${display} (${record.scramble})`;
+    li.addEventListener("click",()=>deleteTime(index));
+    historyList.appendChild(li);
+  });
+}
+
+function startTimer() {
+  if(isRunning || isInspecting) return;
+  isReady = true;
+  isRunning = true;
+  startTime = Date.now();
+  timerInterval = setInterval(()=>{
+    let elapsed = Date.now() - startTime;
+    timerDisplay.textContent = (elapsed/1000).toFixed(3);
+  }, 10);
+  hintDisplay.textContent = "計時中...";
+}
+
+function stopTimer() {
+  if(!isRunning) return;
+  clearInterval(timerInterval);
+  isRunning = false;
+  lastSolve = Date.now() - startTime;
+  isWaitingForConfirmation = true;
+  timerDisplay.textContent = (lastSolve/1000).toFixed(3);
+  hintDisplay.textContent = "按確認儲存時間";
+}
+
+function confirmTime() {
+  if(!isWaitingForConfirmation || lastSolve===null) return;
+  const record = { time: lastSolve, scramble: currentScramble, date: new Date().toISOString(), penalty: null };
+  times.unshift(record);
+  saveTimes();
+  lastSolve = null;
+  isWaitingForConfirmation = false;
+  currentScramble = generateScramble();
+  scrambleDisplay.textContent = currentScramble;
+  timerDisplay.textContent = "0.000";
+  hintDisplay.textContent = "按住空白鍵準備";
+}
+
+function applyPenalty(penalty) {
+  if(times.length===0 || times[0].penalty!==null) return;
+  if(penalty==="+2") times[0].time += 2000;
+  times[0].penalty = penalty;
+  saveTimes();
+}
+
+function deleteTime(index){
+  times.splice(index,1);
+  saveTimes();
+}
+
+function clearHistory() {
+  times = [];
+  saveTimes();
+  timerDisplay.textContent = "0.000";
+}
+
+// === 綁定按鈕 ===
+document.getElementById("startStopBtn").addEventListener("click",()=>{
+  if(isRunning) stopTimer();
+  else startTimer();
+});
+document.getElementById("confirmBtn").addEventListener("click", confirmTime);
+document.getElementById("plus2Btn").addEventListener("click", ()=>applyPenalty("+2"));
+document.getElementById("dnfBtn").addEventListener("click", ()=>applyPenalty("DNF"));
+document.getElementById("clearBtn").addEventListener("click", clearHistory);
+
+renderHistory();
+</script>
+
 </body>
 </html>
