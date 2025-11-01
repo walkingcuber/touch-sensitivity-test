@@ -1,88 +1,332 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html>
+<html lang="zh-Hant">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>微風計時器1.2.1</title>
-<meta name="description" content="專業的魔方計時器，支援多種WCA項目，包含歷史紀錄、統計分析和打亂公式生成。1.2.1版">
-<meta name="author" content="Cube Timer" />
-
-<meta property="og:type" content="website" />
-<meta property="og:image" content="placeholder.svg" />
-<meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:site" content="@lovable_dev" />
-<meta name="twitter:image" content="placeholder.svg" />
-
-<meta property="og:title" content="微風計時器1.2.1">
-<meta name="twitter:title" content="微風計時器1.2.1">
-<meta property="og:description" content="專業的魔方計時器，支援多種WCA項目，包含歷史紀錄、統計分析和打亂公式生成。1.2.1版">
-<meta name="twitter:description" content="專業的魔方計時器，支援多種WCA項目，包含歷史紀錄、統計分析和打亂公式生成。1.2.1版">
-
-<script type="module" crossorigin src="/assets/index-B3rWYWb4.js"></script>
-<link rel="stylesheet" crossorigin href="/assets/index-tj4lr_qw.css">
-
-<style>
-  #lovable-badge {
-    position: fixed;
-    bottom: 10px;
-    right: 10px;
-    width: 141px;
-    padding: 5px 13px;	
-    background-color: #000;
-    color: #fff;
-    font-size: 12px;
-    border-radius: 5px;
-    font-family: sans-serif;
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    z-index: 1000000;
-    text-transform: none !important;
-    font-feature-settings: normal !important;
-    font-weight: 400 !important;
-  }
-  #lovable-badge svg {
-    width: 60px;
-    height: 12px;
-  }
-  #lovable-badge-close {
-    position: absolute;
-    top: -2px;
-    right: 5px;
-    cursor: pointer;
-    font-size: 14px;
-    color: #A1A1AA;
-  }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>魔方計時器 (加速版)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Noto Sans TC', sans-serif; touch-action: manipulation; -webkit-user-select: none; user-select: none; transition: background-color 0.3s, color 0.3s; overflow: hidden; }
+        .theme-black { background-color: #111827; color: #f9fafb; } .theme-white { background-color: #f3f4f6; color: #1f2937; } .theme-blue { background-color: #1e3a8a; color: #eff6ff; } .theme-mint { background-color: #f0fdfa; color: #0f766e; } .theme-synthwave { background-color: #0c0a21; color: #e0e7ff; }
+        .theme-black .panel, .theme-black .login-panel { background-color: #1f2937; } .theme-white .panel, .theme-white .login-panel { background-color: #ffffff; border: 1px solid #e5e7eb; } .theme-blue .panel, .theme-blue .login-panel { background-color: #1e40af; } .theme-mint .panel, .theme-mint .login-panel { background-color: #ccfbf1; } .theme-synthwave .panel, .theme-synthwave .login-panel { background-color: #1e1b4b; }
+        .theme-black .scramble-text { color: #facc15; } .theme-white .scramble-text { color: #4b5563; } .theme-blue .scramble-text { color: #fde047; } .theme-mint .scramble-text { color: #115e59; } .theme-synthwave .scramble-text { color: #f472b6; }
+        .theme-white .history-item, .theme-mint .history-item { background-color: #f9fafb; } .theme-black .history-item, .theme-blue .history-item, .theme-synthwave .history-item { background-color: #374151; }
+        .theme-white .touch-pad, .theme-mint .touch-pad { background-color: #e5e7eb; border-color: #d1d5db; } .theme-black .touch-pad, .theme-blue .touch-pad, .theme-synthwave .touch-pad { background-color: #374151; border-color: #4b5563; }
+        .touch-pad.active { background-color: #4f46e5 !important; border-color: #6366f1 !important; }
+        .btn-theme-black { background-color: #374151; color: #e5e7eb; } .btn-theme-black:hover { background-color: #4b5563; } .btn-theme-white { background-color: #ffffff; color: #374151; border: 1px solid #d1d5db; } .btn-theme-white:hover { background-color: #f9fafb; } .btn-theme-blue { background-color: #2563eb; color: #eff6ff; } .btn-theme-blue:hover { background-color: #3b82f6; } .btn-theme-mint { background-color: #14b8a6; color: #ffffff; } .btn-theme-mint:hover { background-color: #0d9488; } .btn-theme-synthwave { background-color: #4338ca; color: #e0e7ff; } .btn-theme-synthwave:hover { background-color: #3730a3; }
+        .timer-display { font-family: 'Roboto Mono', monospace; transition: color 0.15s, font-size 0.3s; } .timer-font-standard { font-size: 6rem; } @media (min-width: 1024px) { .timer-font-standard { font-size: 7.5rem; } } .timer-font-large { font-size: 8rem; } @media (min-width: 1024px) { .timer-font-large { font-size: 9rem; } }
+        .scramble-text { font-family: 'Roboto Mono', monospace; transition: opacity 0.3s, height 0.3s; } .scramble-hidden { opacity: 0; height: 0; padding: 0; margin: 0; overflow: hidden; }
+        .timer-inspect { color: #f59e0b; } .timer-ready { color: #4ade80; }
+        #settings-modal input[type="radio"]:checked + label { background-color: #3b82f6; color: white; border-color: #3b82f6; } #settings-modal input[type="radio"] { display: none; }
+        #settings-modal .toggle-switch { width: 4rem; height: 2rem; } #settings-modal .toggle-switch-handle { width: 1.5rem; height: 1.5rem; transform: translateX(0.25rem); transition: transform 0.2s ease-in-out; }
+        #settings-modal input[type="checkbox"]:checked + .toggle-switch .toggle-switch-handle { transform: translateX(2.25rem); }
+        .custom-scrollbar::-webkit-scrollbar { width: 8px; } .custom-scrollbar::-webkit-scrollbar-track { background: transparent; } .custom-scrollbar::-webkit-scrollbar-thumb { background: #4b5563; border-radius: 4px; }
+        .login-input { background-color: #374151; border: 1px solid #4b5563; color: white; }
+    </style>
 </head>
+<body class="theme-black">
+    <!-- Login Container -->
+    <div id="login-container" class="flex items-center justify-center h-screen w-screen">
+        <div class="login-panel w-full max-w-sm rounded-2xl shadow-xl p-8 text-center">
+            <h1 class="text-3xl font-bold mb-6">登入計時器</h1>
+            <div class="space-y-4">
+                <input type="text" id="username-input" placeholder="帳號" class="login-input w-full p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <input type="password" id="password-input" placeholder="密碼" class="login-input w-full p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+            <p id="login-error" class="text-red-500 h-6 mt-2 text-sm"></p>
+            <button id="login-btn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition mt-4">登入</button>
+        </div>
+    </div>
 
-<body>
-<div id="root"></div>
+    <!-- App Container -->
+    <div id="app-container" class="hidden flex-col h-screen w-screen p-4 relative">
+        <div id="user-info" class="absolute top-4 right-4 text-sm text-gray-400">
+            歡迎, <span id="display-username" class="font-semibold"></span>! <button id="logout-btn" class="ml-2 underline hover:text-white transition">登出</button>
+        </div>
+        <header class="w-full text-center py-2 md:py-4"><div id="scramble" class="scramble-text text-lg md:text-2xl font-semibold p-2">載入中...</div></header>
+        <main class="flex-grow flex flex-col md:flex-row items-center justify-around w-full max-w-7xl mx-auto">
+            <div id="mini-history-panel" class="w-full md:w-1/4 flex justify-center order-2 md:order-1 mt-4 md:mt-0 cursor-pointer p-4 rounded-lg"><div class="text-center"><h3 class="text-sm text-gray-400 mb-2">最近成績</h3><ul id="mini-history-list" class="space-y-2 text-xl font-mono"></ul></div></div>
+            <div class="w-full md:w-1/2 flex flex-col items-center justify-center order-1 md:order-2"><div id="timer" class="timer-display font-bold select-none">0.00</div><div id="hint" class="mt-4 text-gray-400 text-lg h-6"></div></div>
+            <div id="stats-panel" class="w-full md:w-1/4 flex justify-center order-3 md:order-3 mt-4 md:mt-0 cursor-pointer p-4 rounded-lg"><div class="grid grid-cols-2 gap-x-8 gap-y-4 text-center"><div><div class="text-sm text-gray-400">目前平均</div><div id="current-avg" class="text-2xl font-semibold font-mono">-</div></div><div><div class="text-sm text-gray-400">最佳成績</div><div id="best-time" class="text-2xl font-semibold font-mono">-</div></div><div><div class="text-sm text-gray-400">ao5</div><div id="ao5" class="text-2xl font-semibold font-mono">-</div></div><div><div class="text-sm text-gray-400">ao12</div><div id="ao12" class="text-2xl font-semibold font-mono">-</div></div></div></div>
+        </main>
+        <footer id="bottom-bar" class="w-full h-28 md:h-32 flex items-center justify-center">
+             <div id="computer-controls" class="hidden flex gap-4"><button id="other-btn-computer" class="rounded-lg flex items-center justify-center w-32 h-14 shadow-lg transform transition-transform active:scale-95 text-xl font-bold">其他</button><button id="settings-toggle-computer" class="rounded-lg flex items-center justify-center w-32 h-14 shadow-lg transform transition-transform active:scale-95 text-xl font-bold">設定</button></div>
+             <div id="touch-controls" class="hidden w-full h-full flex items-center justify-between gap-2 md:gap-4"><div id="left-pad" class="touch-pad h-full flex-1 rounded-2xl border-2 transition-colors"></div><div class="flex flex-col md:flex-row gap-2"><button id="other-btn-touch" class="rounded-lg flex items-center justify-center w-28 h-14 shadow-lg transform transition-transform active:scale-95 flex-shrink-0 text-lg font-bold">其他</button><button id="settings-toggle-touch" class="rounded-lg flex items-center justify-center w-28 h-14 shadow-lg transform transition-transform active:scale-95 flex-shrink-0 text-lg font-bold">設定</button></div><div id="right-pad" class="touch-pad h-full flex-1 rounded-2xl border-2 transition-colors"></div></div>
+        </footer>
+    </div>
+    <div id="history-modal" class="hidden fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-40 p-4"><div class="panel w-full max-w-lg h-[80vh] rounded-2xl shadow-xl p-6 flex flex-col"><div class="flex justify-between items-center mb-4"><h2 class="text-2xl font-bold">歷史紀錄 (<span id="history-puzzle-name"></span>)</h2><button id="close-history-btn" class="text-gray-400 hover:text-white text-3xl">&times;</button></div><div class="flex-grow overflow-y-auto custom-scrollbar pr-2 mb-4"><ul id="history-list" class="space-y-2"></ul></div><div class="flex gap-4"><button id="clear-history-btn" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded-lg transition">清除此項目紀錄</button></div></div></div>
+    <div id="settings-modal" class="hidden fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4"><div class="panel w-full max-w-md rounded-2xl shadow-xl p-6 md:p-8"><h2 class="text-2xl font-bold mb-6 text-center">計時器設定</h2><div class="space-y-4"><div class="flex items-center justify-between"><span class="font-semibold">主題</span><div class="flex gap-1 flex-wrap justify-end"><input type="radio" id="theme-black" name="theme" value="black"><label for="theme-black" class="cursor-pointer border-2 border-gray-500 rounded-lg px-2 py-1 text-sm transition-all">黑色</label><input type="radio" id="theme-white" name="theme" value="white"><label for="theme-white" class="cursor-pointer border-2 border-gray-500 rounded-lg px-2 py-1 text-sm transition-all">白色</label><input type="radio" id="theme-blue" name="theme" value="blue"><label for="theme-blue" class="cursor-pointer border-2 border-gray-500 rounded-lg px-2 py-1 text-sm transition-all">藍色</label><input type="radio" id="theme-mint" name="theme" value="mint"><label for="theme-mint" class="cursor-pointer border-2 border-gray-500 rounded-lg px-2 py-1 text-sm transition-all">薄荷</label><input type="radio" id="theme-synthwave" name="theme" value="synthwave"><label for="theme-synthwave" class="cursor-pointer border-2 border-gray-500 rounded-lg px-2 py-1 text-sm transition-all">霓虹</label></div></div><div class="flex items-center justify-between"><span class="font-semibold">WCA 項目</span><select id="puzzle-select" class="bg-gray-700 border border-gray-600 rounded-lg px-3 py-1 text-white"><option value="2x2">2x2x2 方塊</option><option value="3x3">3x3x3 方塊</option><option value="4x4">4x4x4 方塊</option><option value="5x5">5x5x5 方塊</option><option value="6x6">6x6x6 方塊</option><option value="7x7">7x7x7 方塊</option><option value="megaminx">Megaminx</option><option value="pyraminx">Pyraminx</option><option value="skewb">Skewb</option><option value="sq1">Square-1</option></select></div><div class="flex items-center justify-between"><span class="font-semibold">時間字體大小</span><div class="flex gap-2"><input type="radio" id="font-standard" name="timerFont" value="standard"><label for="font-standard" class="cursor-pointer border-2 border-gray-500 rounded-lg px-3 py-1 text-sm transition-all">標準</label><input type="radio" id="font-large" name="timerFont" value="large"><label for="font-large" class="cursor-pointer border-2 border-gray-500 rounded-lg px-3 py-1 text-sm transition-all">巨大</label></div></div><div class="flex items-center justify-between"><span class="font-semibold">輸入模式</span><div class="flex gap-2"><input type="radio" id="input-computer" name="inputMode" value="computer"><label for="input-computer" class="cursor-pointer border-2 border-gray-500 rounded-lg px-3 py-1 text-sm transition-all">電腦</label><input type="radio" id="input-touch" name="inputMode" value="touch"><label for="input-touch" class="cursor-pointer border-2 border-gray-500 rounded-lg px-3 py-1 text-sm transition-all">觸控</label></div></div><div class="flex items-center justify-between"><span class="font-semibold">顯示打亂公式</span><label for="show-scramble-toggle" class="cursor-pointer"><input type="checkbox" id="show-scramble-toggle" class="hidden"><div class="toggle-switch bg-gray-600 rounded-full flex items-center"><div class="toggle-switch-handle bg-white rounded-full"></div></div></label></div></div><button id="close-settings-btn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition mt-6">完成</button></div></div>
+    <div id="other-modal" class="hidden fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4"><div class="panel w-full max-w-md rounded-2xl shadow-xl p-8"><h2 class="text-3xl font-bold mb-4 text-center">判罰選項</h2><p class="text-center text-gray-400 mb-6">最近一次成績: <span id="last-solve-display" class="font-mono font-bold">-.--</span></p><div class="flex flex-col gap-4"><button id="plus2-btn" class="w-full bg-amber-500 hover:bg-amber-600 text-white font-bold py-3 px-4 rounded-lg transition disabled:bg-gray-500 disabled:cursor-not-allowed">+2 秒懲罰</button><button id="dnf-btn" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded-lg transition disabled:bg-gray-500 disabled:cursor-not-allowed">DNF (未完成)</button><button id="close-other-btn" class="w-full bg-gray-500 hover:bg-gray-600 text-white font-bold py-3 px-4 rounded-lg transition mt-4">取消</button></div></div></div>
+    <div id="confirm-modal" class="hidden fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4"><div class="panel w-full max-w-sm rounded-2xl shadow-xl p-8 text-center"><p id="confirm-message" class="text-lg mb-6">您確定嗎？</p><div class="flex gap-4"><button id="confirm-cancel-btn" class="w-full bg-gray-500 hover:bg-gray-600 text-white font-bold py-3 px-4 rounded-lg transition">取消</button><button id="confirm-ok-btn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition">確定</button></div></div></div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- Fixed User Database (300 Users) ---
+            const users = {
+                "weifeng001": "weifeng3614", "weifeng002": "weifeng8491", "weifeng003": "weifeng6130", "weifeng004": "weifeng8816", "weifeng005": "weifeng1834", "weifeng006": "weifeng1842", "weifeng007": "weifeng3026", "weifeng008": "weifeng6842", "weifeng009": "weifeng4416", "weifeng010": "weifeng5310", "weifeng011": "weifeng7259", "weifeng012": "weifeng7337", "weifeng013": "weifeng6437", "weifeng014": "weifeng1328", "weifeng015": "weifeng1534", "weifeng016": "weifeng8736", "weifeng017": "weifeng6826", "weifeng018": "weifeng2652", "weifeng019": "weifeng2442", "weifeng020": "weifeng8342", "weifeng021": "weifeng1768", "weifeng022": "weifeng2373", "weifeng023": "weifeng8293", "weifeng024": "weifeng6660", "weifeng025": "weifeng1583", "weifeng026": "weifeng6284", "weifeng027": "weifeng3432", "weifeng028": "weifeng7509", "weifeng029": "weifeng2115", "weifeng030": "weifeng8236", "weifeng031": "weifeng6378", "weifeng032": "weifeng4824", "weifeng033": "weifeng2527", "weifeng034": "weifeng4268", "weifeng035": "weifeng9503", "weifeng036": "weifeng3479", "weifeng037": "weifeng6478", "weifeng038": "weifeng7558", "weifeng039": "weifeng9487", "weifeng040": "weifeng3756", "weifeng041": "weifeng6983", "weifeng042": "weifeng9730", "weifeng043": "weifeng3262", "weifeng044": "weifeng5885", "weifeng045": "weifeng6834", "weifeng046": "weifeng8959", "weifeng047": "weifeng1788", "weifeng048": "weifeng3224", "weifeng049": "weifeng3380", "weifeng050": "weifeng2317", "weifeng051": "weifeng4549", "weifeng052": "weifeng3821", "weifeng053": "weifeng8555", "weifeng054": "weifeng8015", "weifeng055": "weifeng4428", "weifeng056": "weifeng3819", "weifeng057": "weifeng4042", "weifeng058": "weifeng2987", "weifeng059": "weifeng3832", "weifeng060": "weifeng4495", "weifeng061": "weifeng7847", "weifeng062": "weifeng5468", "weifeng063": "weifeng4883", "weifeng064": "weifeng2113", "weifeng065": "weifeng9301", "weifeng066": "weifeng2829", "weifeng067": "weifeng5407", "weifeng068": "weifeng5618", "weifeng069": "weifeng6781", "weifeng070": "weifeng3345", "weifeng071": "weifeng5819", "weifeng072": "weifeng8943", "weifeng073": "weifeng5876", "weifeng074": "weifeng8929", "weifeng075": "weifeng1499", "weifeng076": "weifeng3334", "weifeng077": "weifeng7363", "weifeng078": "weifeng9432", "weifeng079": "weifeng7031", "weifeng080": "weifeng9458", "weifeng081": "weifeng6114", "weifeng082": "weifeng3989", "weifeng083": "weifeng2438", "weifeng084": "weifeng3648", "weifeng085": "weifeng3687", "weifeng086": "weifeng2426", "weifeng087": "weifeng3523", "weifeng088": "weifeng9143", "weifeng089": "weifeng2343", "weifeng090": "weifeng5067", "weifeng091": "weifeng1547", "weifeng092": "weifeng8583", "weifeng093": "weifeng7961", "weifeng094": "weifeng1070", "weifeng095": "weifeng6321", "weifeng096": "weifeng8273", "weifeng097": "weifeng5585", "weifeng098": "weifeng2018", "weifeng099": "weifeng3971", "weifeng100": "weifeng1325", "weifeng101": "weifeng1938", "weifeng102": "weifeng1964", "weifeng103": "weifeng9699", "weifeng104": "weifeng6745", "weifeng105": "weifeng3816", "weifeng106": "weifeng9638", "weifeng107": "weifeng5136", "weifeng108": "weifeng5349", "weifeng109": "weifeng7540", "weifeng110": "weifeng5290", "weifeng111": "weifeng4207", "weifeng112": "weifeng4837", "weifeng113": "weifeng8258", "weifeng114": "weifeng7943", "weifeng115": "weifeng6189", "weifeng116": "weifeng6715", "weifeng117": "weifeng9883", "weifeng118": "weifeng3536", "weifeng119": "weifeng7508", "weifeng120": "weifeng2593", "weifeng121": "weifeng5468", "weifeng122": "weifeng4122", "weifeng123": "weifeng1293", "weifeng124": "weifeng5798", "weifeng125": "weifeng6918", "weifeng126": "weifeng4984", "weifeng127": "weifeng1849", "weifeng128": "weifeng4245", "weifeng129": "weifeng6841", "weifeng130": "weifeng7835", "weifeng131": "weifeng4288", "weifeng132": "weifeng8861", "weifeng133": "weifeng9573", "weifeng134": "weifeng2359", "weifeng135": "weifeng3858", "weifeng136": "weifeng5028", "weifeng137": "weifeng5519", "weifeng138": "weifeng3557", "weifeng139": "weifeng1585", "weifeng140": "weifeng5811", "weifeng141": "weifeng9337", "weifeng142": "weifeng2971", "weifeng143": "weifeng4543", "weifeng144": "weifeng5129", "weifeng145": "weifeng4780", "weifeng146": "weifeng1320", "weifeng147": "weifeng5409", "weifeng148": "weifeng3181", "weifeng149": "weifeng1231", "weifeng150": "weifeng6771",
+                "weifeng151": "weifeng8898", "weifeng152": "weifeng5383", "weifeng153": "weifeng1816", "weifeng154": "weifeng1481", "weifeng155": "weifeng5943", "weifeng156": "weifeng2764", "weifeng157": "weifeng9193", "weifeng158": "weifeng6497", "weifeng159": "weifeng1308", "weifeng160": "weifeng6390", "weifeng161": "weifeng3070", "weifeng162": "weifeng8278", "weifeng163": "weifeng3803", "weifeng164": "weifeng6939", "weifeng165": "weifeng9319", "weifeng166": "weifeng9711", "weifeng167": "weifeng6428", "weifeng168": "weifeng7014", "weifeng169": "weifeng5251", "weifeng170": "weifeng1311", "weifeng171": "weifeng4649", "weifeng172": "weifeng6212", "weifeng173": "weifeng4527", "weifeng174": "weifeng7825", "weifeng175": "weifeng5615", "weifeng176": "weifeng2646", "weifeng177": "weifeng8728", "weifeng178": "weifeng8839", "weifeng179": "weifeng6482", "weifeng180": "weifeng9903", "weifeng181": "weifeng4469", "weifeng182": "weifeng3401", "weifeng183": "weifeng9346", "weifeng184": "weifeng3949", "weifeng185": "weifeng6028", "weifeng186": "weifeng3010", "weifeng187": "weifeng2193", "weifeng188": "weifeng4732", "weifeng189": "weifeng4387", "weifeng190": "weifeng2496", "weifeng191": "weifeng2860", "weifeng192": "weifeng5036", "weifeng193": "weifeng2731", "weifeng194": "weifeng4333", "weifeng195": "weifeng4559", "weifeng196": "weifeng6113", "weifeng197": "weifeng8413", "weifeng198": "weifeng1894", "weifeng199": "weifeng6378", "weifeng200": "weifeng9011", "weifeng201": "weifeng2261", "weifeng202": "weifeng1243", "weifeng203": "weifeng4240", "weifeng204": "weifeng3492", "weifeng205": "weifeng3590", "weifeng206": "weifeng1997", "weifeng207": "weifeng5899", "weifeng208": "weifeng3253", "weifeng209": "weifeng9108", "weifeng210": "weifeng2079", "weifeng211": "weifeng6020", "weifeng212": "weifeng6885", "weifeng213": "weifeng6421", "weifeng214": "weifeng2516", "weifeng215": "weifeng5921", "weifeng216": "weifeng9826", "weifeng217": "weifeng3602", "weifeng218": "weifeng7384", "weifeng219": "weifeng7569", "weifeng220": "weifeng4983", "weifeng221": "weifeng4282", "weifeng222": "weifeng5515", "weifeng223": "weifeng1354", "weifeng224": "weifeng6968", "weifeng225": "weifeng4493", "weifeng226": "weifeng1014", "weifeng227": "weifeng2829", "weifeng228": "weifeng5550", "weifeng229": "weifeng2936", "weifeng230": "weifeng6250", "weifeng231": "weifeng4360", "weifeng232": "weifeng1689", "weifeng233": "weifeng2831", "weifeng234": "weifeng9116", "weifeng235": "weifeng4002", "weifeng236": "weifeng8728", "weifeng237": "weifeng2450", "weifeng238": "weifeng3653", "weifeng239": "weifeng3258", "weifeng240": "weifeng4387", "weifeng241": "weifeng5042", "weifeng242": "weifeng9508", "weifeng243": "weifeng2743", "weifeng244": "weifeng6108", "weifeng245": "weifeng7549", "weifeng246": "weifeng5023", "weifeng247": "weifeng4046", "weifeng248": "weifeng1603", "weifeng249": "weifeng4688", "weifeng250": "weifeng4915", "weifeng251": "weifeng9578", "weifeng252": "weifeng3681", "weifeng253": "weifeng9239", "weifeng254": "weifeng3387", "weifeng255": "weifeng6284", "weifeng256": "weifeng8944", "weifeng257": "weifeng3539", "weifeng258": "weifeng2753", "weifeng259": "weifeng4324", "weifeng260": "weifeng1139", "weifeng261": "weifeng8283", "weifeng262": "weifeng9338", "weifeng263": "weifeng3038", "weifeng264": "weifeng9554", "weifeng265": "weifeng3815", "weifeng266": "weifeng2542", "weifeng267": "weifeng7638", "weifeng268": "weifeng9282", "weifeng269": "weifeng7056", "weifeng270": "weifeng4833", "weifeng271": "weifeng9223", "weifeng272": "weifeng2529", "weifeng273": "weifeng5194", "weifeng274": "weifeng4469", "weifeng275": "weifeng4034", "weifeng276": "weifeng9309", "weifeng277": "weifeng5315", "weifeng278": "weifeng8024", "weifeng279": "weifeng9515", "weifeng280": "weifeng6164", "weifeng281": "weifeng6895", "weifeng282": "weifeng1955", "weifeng283": "weifeng7219", "weifeng284": "weifeng1567", "weifeng285": "weifeng1181", "weifeng286": "weifeng6377", "weifeng287": "weifeng6887", "weifeng288": "weifeng4723", "weifeng289": "weifeng7302", "weifeng290": "weifeng9346", "weifeng291": "weifeng7727", "weifeng292": "weifeng9114", "weifeng293": "weifeng6082", "weifeng294": "weifeng5950", "weifeng295": "weifeng1289", "weifeng296": "weifeng5601", "weifeng297": "weifeng7464", "weifeng298": "weifeng3577", "weifeng299": "weifeng1413", "weifeng300": "weifeng5886"
+            };
 
-<!-- 徽章替換成 placeholder.svg -->
-<a id="lovable-badge" target="_blank" href="https://lovable.dev/projects/a3c657ac-0ded-483f-b323-50dbab0e32e7?utm_source=lovable-badge">
-  <span style="color: #A1A1AA;">Edit with</span>
-  <img src="placeholder.svg" alt="Lovable Badge">
-  <button id="lovable-badge-close">&times;</button>
-</a>
+            const allDOMElements = {
+                loginContainer: document.getElementById('login-container'),
+                appContainer: document.getElementById('app-container'),
+                usernameInput: document.getElementById('username-input'),
+                passwordInput: document.getElementById('password-input'),
+                loginBtn: document.getElementById('login-btn'),
+                loginError: document.getElementById('login-error'),
+                logoutBtn: document.getElementById('logout-btn'),
+                displayUsername: document.getElementById('display-username'),
+                timerDisplay: document.getElementById('timer'),
+                scrambleDisplay: document.getElementById('scramble'),
+                hintDisplay: document.getElementById('hint'),
+                miniHistoryList: document.getElementById('mini-history-list'),
+                computerControls: document.getElementById('computer-controls'),
+                touchControls: document.getElementById('touch-controls'),
+                leftPad: document.getElementById('left-pad'),
+                rightPad: document.getElementById('right-pad'),
+                settingsModal: document.getElementById('settings-modal'),
+                historyModal: document.getElementById('history-modal'),
+                otherModal: document.getElementById('other-modal'),
+                confirmModal: document.getElementById('confirm-modal'),
+                settingsToggleComputer: document.getElementById('settings-toggle-computer'),
+                settingsToggleTouch: document.getElementById('settings-toggle-touch'),
+                otherBtnComputer: document.getElementById('other-btn-computer'),
+                otherBtnTouch: document.getElementById('other-btn-touch'),
+                closeOtherBtn: document.getElementById('close-other-btn'),
+                plus2Btn: document.getElementById('plus2-btn'),
+                dnfBtn: document.getElementById('dnf-btn'),
+                lastSolveDisplay: document.getElementById('last-solve-display'),
+                miniHistoryPanel: document.getElementById('mini-history-panel'),
+                statsPanel: document.getElementById('stats-panel'),
+                confirmMessage: document.getElementById('confirm-message'),
+                confirmOkBtn: document.getElementById('confirm-ok-btn'),
+                confirmCancelBtn: document.getElementById('confirm-cancel-btn'),
+            };
 
-<script>
-  // 不在 iframe 或 puppeteer 時才顯示徽章
-  if (window.self !== window.top || navigator.userAgent.includes('puppeteer')) {
-    var badge = document.getElementById('lovable-badge');
-    if (badge) badge.style.display = 'none';
-  }
+            let currentUser = null;
+            let timer, startTime, isRunning = false, isReady = false, isInspecting = false, isWaitingForConfirmation = false;
+            let inspectionTimeout, confirmCallback = null;
+            let spacebarDown = false, leftPadActive = false, rightPadActive = false;
+            let lastSolve = null, times = [], currentScramble = '', settings = {};
+            const puzzleNames = { '2x2': '2x2x2 方塊', '3x3': '3x3x3 方塊', '4x4': '4x4x4 方塊', '5x5': '5x5x5 方塊', '6x6': '6x6x6 方塊', '7x7': '7x7x7 方塊', 'pyraminx': 'Pyraminx', 'skewb': 'Skewb', 'megaminx': 'Megaminx', 'sq1': 'Square-1' };
+            const defaultSettings = { theme: 'black', puzzle: '3x3', inputMode: 'computer', timerSize: 'large', showScramble: true, };
 
-  // 關閉徽章按鈕
-  var closeButton = document.getElementById('lovable-badge-close');
-  if (closeButton) {
-    closeButton.addEventListener('click', function(event) {
-      event.preventDefault();
-      event.stopPropagation();
-      var badge = document.getElementById('lovable-badge');
-      if (badge) badge.style.display = 'none';
-    });
-  }
-</script>
+            function init() {
+                const loggedInUser = sessionStorage.getItem('cubeTimerUser');
+                if (loggedInUser && users[loggedInUser]) {
+                    showApp(loggedInUser);
+                } else {
+                    showLogin();
+                }
+                allDOMElements.loginBtn.addEventListener('click', handleLogin);
+                allDOMElements.passwordInput.addEventListener('keyup', (e) => { if (e.key === 'Enter') handleLogin(); });
+                allDOMElements.logoutBtn.addEventListener('click', handleLogout);
+            }
+
+            function handleLogin() {
+                const username = allDOMElements.usernameInput.value;
+                const password = allDOMElements.passwordInput.value;
+                if (users[username] && users[username] === password) {
+                    sessionStorage.setItem('cubeTimerUser', username);
+                    showApp(username);
+                } else {
+                    allDOMElements.loginError.textContent = '帳號或密碼錯誤。';
+                }
+            }
+            
+            function handleLogout() {
+                saveData();
+                sessionStorage.removeItem('cubeTimerUser');
+                currentUser = null;
+                showLogin();
+            }
+
+            function showLogin() {
+                allDOMElements.appContainer.classList.add('hidden');
+                allDOMElements.appContainer.classList.remove('flex');
+                allDOMElements.loginContainer.classList.remove('hidden');
+                allDOMElements.loginContainer.classList.add('flex');
+                allDOMElements.usernameInput.value = '';
+                allDOMElements.passwordInput.value = '';
+                allDOMElements.loginError.textContent = '';
+            }
+
+            function showApp(username) {
+                currentUser = username;
+                allDOMElements.displayUsername.textContent = username;
+                allDOMElements.loginContainer.classList.add('hidden');
+                allDOMElements.loginContainer.classList.remove('flex');
+                allDOMElements.appContainer.classList.remove('hidden');
+                allDOMElements.appContainer.classList.add('flex');
+                loadSettings();
+            }
+            
+            function saveData() {
+                if (!currentUser) return;
+                saveTimes();
+            }
+
+            function loadSettings() {
+                if (!currentUser) return;
+                const savedSettings = JSON.parse(localStorage.getItem(`cubeSettings_${currentUser}`)) || {};
+                settings = { ...defaultSettings, ...savedSettings };
+                loadTimes(); 
+                applySettings();
+                updateSettingsModalUI();
+            }
+
+            function saveSettings() {
+                if (!currentUser) return;
+                settings.theme = document.querySelector('input[name="theme"]:checked').value;
+                const newPuzzle = document.getElementById('puzzle-select').value;
+                if (settings.puzzle !== newPuzzle) {
+                    saveTimes();
+                    settings.puzzle = newPuzzle;
+                    loadTimes();
+                    allDOMElements.timerDisplay.textContent = "0.00";
+                }
+                settings.inputMode = document.querySelector('input[name="inputMode"]:checked').value;
+                settings.timerSize = document.querySelector('input[name="timerFont"]:checked').value;
+                settings.showScramble = document.getElementById('show-scramble-toggle').checked;
+                localStorage.setItem(`cubeSettings_${currentUser}`, JSON.stringify(settings));
+                applySettings();
+            }
+            
+            function loadTimes() {
+                if (!currentUser) return;
+                const key = `cubeTimes_${currentUser}_${settings.puzzle}`;
+                times = JSON.parse(localStorage.getItem(key)) || [];
+                updateAllDisplays();
+            }
+
+            function saveTimes() {
+                if (!currentUser) return;
+                const key = `cubeTimes_${currentUser}_${settings.puzzle}`;
+                localStorage.setItem(key, JSON.stringify(times));
+            }
+
+            function applySettings() {
+                const { settingsToggleComputer, settingsToggleTouch, otherBtnComputer, otherBtnTouch, timerDisplay, scrambleDisplay } = allDOMElements;
+                document.body.className = `theme-${settings.theme}`;
+                [settingsToggleComputer, settingsToggleTouch, otherBtnComputer, otherBtnTouch].forEach(btn => {
+                    btn.classList.remove('btn-theme-black', 'btn-theme-white', 'btn-theme-blue', 'btn-theme-mint', 'btn-theme-synthwave');
+                    btn.classList.add(`btn-theme-${settings.theme}`);
+                });
+                timerDisplay.classList.toggle('timer-font-standard', settings.timerSize === 'standard');
+                timerDisplay.classList.toggle('timer-font-large', settings.timerSize === 'large');
+                scrambleDisplay.classList.toggle('scramble-hidden', !settings.showScramble);
+                generateScramble();
+                updateControlsAndHint();
+            }
+
+            function updateControlsAndHint() {
+                const { computerControls, touchControls, hintDisplay } = allDOMElements;
+                computerControls.classList.toggle('hidden', settings.inputMode !== 'computer');
+                touchControls.classList.toggle('hidden', settings.inputMode !== 'touch');
+                if (isWaitingForConfirmation) { hintDisplay.textContent = '按任意鍵/觸碰以確認'; }
+                else if (isInspecting) { hintDisplay.textContent = '請持續按住...'; }
+                else if (isReady) { hintDisplay.textContent = '放開以開始'; }
+                else if (settings.inputMode === 'computer') { hintDisplay.textContent = '按住空白鍵準備'; }
+                else { hintDisplay.textContent = '雙手按住觸控區準備'; }
+            }
+
+            function updateSettingsModalUI() {
+                document.querySelector(`input[name="theme"][value="${settings.theme}"]`).checked = true;
+                document.getElementById('puzzle-select').value = settings.puzzle;
+                document.querySelector(`input[name="inputMode"][value="${settings.inputMode}"]`).checked = true;
+                document.querySelector(`input[name="timerFont"][value="${settings.timerSize}"]`).checked = true;
+                document.getElementById('show-scramble-toggle').checked = settings.showScramble;
+            }
+
+            function generateScramble() {
+                const { scrambleDisplay } = allDOMElements;
+                const moves = { 'R': ["R", "L", "U", "D", "F", "B"], 'w': ["Rw", "Lw", "Uw", "Dw", "Fw", "Bw"], '3w': ["3Rw", "3Lw", "3Uw", "3Dw", "3Fw", "3Bw"], 'mega': { moves: ["R", "D"], mods: ["++", "--"] }, 'pyra': { moves: ["U", "L", "R", "B"], tips: ["u", "l", "r", "b"] }, 'skewb': ["R", "U", "L", "B"], };
+                const modifiers = ["", "'", "2"];
+                let res = [], len = 20, last = "", p_moves;
+                switch (settings.puzzle) {
+                    case '2x2': p_moves = ["R", "U", "F"]; len = 9; break;
+                    case '3x3': p_moves = moves.R; len = 20; break;
+                    case '4x4': p_moves = [...moves.R, ...moves.w.slice(0, 3)]; len = 45; break;
+                    case '5x5': p_moves = [...moves.R, ...moves.w]; len = 60; break;
+                    case '6x6': p_moves = [...moves.R, ...moves.w, ...moves['3w'].slice(0, 3)]; len = 80; break;
+                    case '7x7': p_moves = [...moves.R, ...moves.w, ...moves['3w']]; len = 100; break;
+                    case 'pyraminx': p_moves = moves.pyra.moves; len = 9; for (let i = 0; i < Math.floor(4 * Math.random()); i++) res.push(moves.pyra.tips[Math.floor(4 * Math.random())] + ["", "'"][Math.floor(2 * Math.random())]); break;
+                    case 'skewb': p_moves = moves.skewb; len = 9; break;
+                    case 'megaminx': for (let i = 0; i < 7; i++) { for (let j = 0; j < 5; j++) res.push(moves.mega.moves[Math.floor(Math.random() * 2)] + moves.mega.mods[Math.floor(Math.random() * 2)]); res.push("U" + ["", "'"][Math.floor(Math.random() * 2)]); } currentScramble = res.join(" "); scrambleDisplay.textContent = currentScramble; return;
+                    case 'sq1': for (let i = 0; i < 15; i++) res.push(`(${~~(Math.random()*12-5)},${~~(Math.random()*12-5)})`); currentScramble = res.join(" / "); scrambleDisplay.textContent = currentScramble; return;
+                    default: p_moves = moves.R; len = 20;
+                }
+                for (let i = 0; i < len; i++) { let move; do { move = p_moves[Math.floor(Math.random() * p_moves.length)]; } while (move === last || (moves.R.includes(last) && moves.R.indexOf(move) === moves.R.indexOf(last) - 1)); res.push(move + (['pyraminx', 'skewb'].includes(settings.puzzle) ? ["", "'"][Math.floor(2 * Math.random())] : modifiers[Math.floor(3 * Math.random())])); last = move; }
+                currentScramble = res.join(" ");
+                scrambleDisplay.textContent = currentScramble;
+            }
+
+            function formatTimeWithDecimals(ms) { return (ms / 1000).toFixed(2); }
+            function startTimer() { const { hintDisplay, timerDisplay } = allDOMElements; if (isRunning) return; startTime = Date.now(); isRunning = true; hintDisplay.style.visibility = 'hidden'; timerDisplay.classList.remove('timer-ready', 'timer-inspect'); timer = setInterval(() => timerDisplay.textContent = formatTimeWithDecimals(Date.now() - startTime), 10); }
+            function stopTimer() { const { timerDisplay, hintDisplay } = allDOMElements; if (!isRunning) return; clearInterval(timer); isRunning = false; lastSolve = Date.now() - startTime; isWaitingForConfirmation = true; timerDisplay.textContent = formatTimeWithDecimals(lastSolve); hintDisplay.style.visibility = 'visible'; updateControlsAndHint(); }
+            function confirmTime() { if (!isWaitingForConfirmation || lastSolve === null) return; times.unshift({ time: lastSolve, scramble: currentScramble, date: new Date().toISOString(), penalty: null }); lastSolve = null; isWaitingForConfirmation = false; saveTimes(); updateAllDisplays(); generateScramble(); updateControlsAndHint(); }
+            function updateAllDisplays() { updateMiniHistoryList(); calculateAndDisplayAverages(); updateHistoryList(); }
+            function formatRecordTime(record) { if (record.penalty === "DNF") return "DNF"; let displayTime = formatTimeWithDecimals(record.time); if (record.penalty === "+2") displayTime += "+"; return displayTime; }
+            function updateMiniHistoryList() { const { miniHistoryList } = allDOMElements; miniHistoryList.innerHTML = ''; const lastFive = times.slice(0, 5); if (lastFive.length === 0) { miniHistoryList.innerHTML = `<li class="text-gray-500">-</li>`; } else { lastFive.forEach((record, index) => { const li = document.createElement('li'); li.textContent = formatRecordTime(record); if (index > 0) li.classList.add('opacity-60'); miniHistoryList.appendChild(li); }); } }
+            function calculateAndDisplayAverages() { const ao5Display = document.getElementById('ao5'), ao12Display = document.getElementById('ao12'), currentAvgDisplay = document.getElementById('current-avg'), bestTimeDisplay = document.getElementById('best-time'); if (times.length === 0) { [ao5Display, ao12Display, currentAvgDisplay, bestTimeDisplay].forEach(el => el.textContent = '-'); return; } const validTimes = times.filter(t => t.penalty !== "DNF").map(t => t.time); currentAvgDisplay.textContent = validTimes.length > 0 ? formatTimeWithDecimals(validTimes.reduce((a, b) => a + b, 0) / validTimes.length) : '-'; bestTimeDisplay.textContent = validTimes.length > 0 ? formatTimeWithDecimals(Math.min(...validTimes)) : '-'; const calculateAo = (count) => { if (times.length < count) return '-'; const last = times.slice(0, count); const dnfs = last.filter(t => t.penalty === 'DNF').length; if (dnfs >= 2) return "DNF"; const sorted = [...last].sort((a, b) => a.time - b.time); sorted.pop(); if (dnfs === 0) sorted.shift(); const sum = sorted.reduce((acc, curr) => acc + curr.time, 0); return formatTimeWithDecimals(sum / (count - 2)); }; ao5Display.textContent = calculateAo(5); ao12Display.textContent = calculateAo(12); }
+            function updateHistoryList() { const historyList = document.getElementById('history-list'); historyList.innerHTML = ''; (document.getElementById('history-puzzle-name')).textContent = puzzleNames[settings.puzzle] || '未知'; times.forEach((record, index) => { const li = document.createElement('li'); li.className = 'history-item flex justify-between items-center p-2 rounded-lg'; li.innerHTML = `<div><span class="text-sm text-gray-400 w-6 inline-block">${times.length - index}.</span><span class="font-semibold">${formatRecordTime(record)}</span></div><button class="delete-btn text-red-500 hover:text-red-400 text-xs" data-index="${index}">刪除</button>`; li.querySelector('.delete-btn').addEventListener('click', (e) => { e.stopPropagation(); times.splice(index, 1); saveTimes(); updateAllDisplays(); }); historyList.appendChild(li); }); }
+            
+            // --- MODIFIED: Faster inspection time ---
+            function startInspection() { 
+                const { timerDisplay } = allDOMElements;
+                if (isInspecting || isRunning) return; 
+                clearTimeout(inspectionTimeout);
+                isInspecting = true; 
+                isReady = false; 
+                updateControlsAndHint();
+                timerDisplay.classList.add('timer-inspect'); // Timer turns yellow
+                
+                inspectionTimeout = setTimeout(() => { 
+                    if (isInspecting) { 
+                        isReady = true;
+                        timerDisplay.classList.remove('timer-inspect');
+                        timerDisplay.classList.add('timer-ready'); // Timer turns green
+                        updateControlsAndHint(); 
+                    } 
+                }, 500); // Wait time is now 0.5 seconds
+            }
+
+            function cancelInspection() { 
+                const { timerDisplay } = allDOMElements; 
+                clearTimeout(inspectionTimeout); 
+                isInspecting = false; 
+                isReady = false; 
+                timerDisplay.classList.remove('timer-inspect', 'timer-ready'); // Clear both states
+                updateControlsAndHint(); 
+            }
+            
+            function showConfirmationModal(message, onConfirm) { const { confirmMessage, confirmModal } = allDOMElements; confirmMessage.textContent = message; confirmCallback = onConfirm; confirmModal.classList.remove('hidden'); }
+            function handleKeyDown(e) { if (!currentUser || settings.inputMode !== 'computer' || e.code !== 'Space') return; e.preventDefault(); if (isRunning) { stopTimer(); return; } if (isWaitingForConfirmation) { confirmTime(); return; } if (!spacebarDown && !isInspecting) { spacebarDown = true; startInspection(); } }
+            function handleKeyUp(e) { if (!currentUser || settings.inputMode !== 'computer' || e.code !== 'Space') return; e.preventDefault(); spacebarDown = false; if (isReady) { startTimer(); } cancelInspection(); }
+            function onTouchStart(e) { e.preventDefault(); if (!currentUser) return; if (isRunning) { stopTimer(); return; } if (isWaitingForConfirmation) { confirmTime(); return; } if (e.currentTarget.id === 'left-pad') leftPadActive = true; if (e.currentTarget.id === 'right-pad') rightPadActive = true; e.currentTarget.classList.add('active'); if (leftPadActive && rightPadActive && !isInspecting) { startInspection(); } }
+            function onTouchEnd(e) { e.preventDefault(); if (e.currentTarget.id === 'left-pad') leftPadActive = false; if (e.currentTarget.id === 'right-pad') rightPadActive = false; e.currentTarget.classList.remove('active'); if (!leftPadActive && !rightPadActive) { if (isReady) { startTimer(); } cancelInspection(); } }
+
+            const { leftPad, rightPad, settingsToggleComputer, settingsToggleTouch, miniHistoryPanel, statsPanel, closeOtherBtn, confirmCancelBtn, confirmOkBtn, otherBtnComputer, otherBtnTouch, plus2Btn, dnfBtn, settingsModal, historyModal, otherModal } = allDOMElements;
+            init();
+            window.addEventListener('keydown', handleKeyDown); window.addEventListener('keyup', handleKeyUp);
+            [leftPad, rightPad].forEach(p => { p.addEventListener('touchstart', onTouchStart, {passive:false}); p.addEventListener('touchend', onTouchEnd, {passive:false}); });
+            [settingsToggleComputer, settingsToggleTouch].forEach(btn => btn.addEventListener('click', () => settingsModal.classList.remove('hidden')));
+            document.getElementById('close-settings-btn').addEventListener('click', () => { saveSettings(); settingsModal.classList.add('hidden'); });
+            [miniHistoryPanel, statsPanel].forEach(panel => panel.addEventListener('click', () => historyModal.classList.remove('hidden')));
+            document.getElementById('close-history-btn').addEventListener('click', () => historyModal.classList.add('hidden'));
+            document.getElementById('clear-history-btn').addEventListener('click', () => { showConfirmationModal(`您確定要清除 ${puzzleNames[settings.puzzle]} 的所有歷史紀錄嗎？`, () => { times = []; saveTimes(); updateAllDisplays(); allDOMElements.timerDisplay.textContent = "0.00"; historyModal.classList.add('hidden'); }); });
+            [otherBtnComputer, otherBtnTouch].forEach(btn => btn.addEventListener('click', () => { const { lastSolveDisplay, plus2Btn, dnfBtn } = allDOMElements; if (times.length === 0) { lastSolveDisplay.textContent = '-.--'; plus2Btn.disabled = true; dnfBtn.disabled = true; } else { lastSolveDisplay.textContent = formatRecordTime(times[0]); const hasPenalty = times[0].penalty !== null; plus2Btn.disabled = hasPenalty; dnfBtn.disabled = hasPenalty; } otherModal.classList.remove('hidden'); }));
+            closeOtherBtn.addEventListener('click', () => otherModal.classList.add('hidden'));
+            plus2Btn.addEventListener('click', () => { if (times.length > 0 && times[0].penalty === null) { times[0].penalty = "+2"; times[0].time += 2000; saveTimes(); updateAllDisplays(); otherModal.classList.add('hidden'); } });
+            dnfBtn.addEventListener('click', () => { if (times.length > 0 && times[0].penalty === null) { times[0].penalty = "DNF"; saveTimes(); updateAllDisplays(); otherModal.classList.add('hidden'); } });
+            confirmCancelBtn.addEventListener('click', () => { confirmCallback = null; allDOMElements.confirmModal.classList.add('hidden'); });
+            confirmOkBtn.addEventListener('click', () => { if (confirmCallback) confirmCallback(); confirmCallback = null; allDOMElements.confirmModal.classList.add('hidden'); });
+        });
+    </script>
 </body>
 </html>
+
+
