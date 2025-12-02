@@ -3,11 +3,44 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dashboard</title>
+<title>Dashboard — Touch Sensitivity Test</title>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
-<h1>後台儀表板</h1>
-<p>你已成功登入！</p>
-<script type="module" src="./Firebase.Js"></script>
+    <h1>歡迎來到 Dashboard</h1>
+    <button id="logout-btn">登出</button>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js"></script>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyDZzacZyAXsjPfmDW6lfZYb_DSaShDmkhc",
+            authDomain: "touch-sensitivity-test.firebaseapp.com",
+            projectId: "touch-sensitivity-test",
+            storageBucket: "touch-sensitivity-test.appspot.com",
+            messagingSenderId: "109316982516",
+            appId: "1:109316982516:web:927d96dddb6e171d3580a1",
+            measurementId: "G-3ZPRK4K8RD"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+
+        // 驗證使用者是否登入
+        auth.onAuthStateChanged(user => {
+            if (!user) {
+                // 若未登入，跳回登入頁
+                window.location.href = "index.html";
+            }
+        });
+
+        // 登出功能
+        document.getElementById("logout-btn").addEventListener("click", () => {
+            auth.signOut().then(() => {
+                window.location.href = "index.html";
+            });
+        });
+    </script>
 </body>
 </html>
