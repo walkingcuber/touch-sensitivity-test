@@ -1,79 +1,27 @@
-<!-- index.html -->
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>登入 — Touch Sensitivity Test</title>
-  <style>
-    :root { --bg:#0f172a; --card:#0b1220; --accent:#3b82f6; color-scheme: dark; }
-    body { margin:0; font-family: system-ui,-apple-system, "Noto Sans TC", Arial; background:var(--bg); color:#fff; height:100vh; display:flex; align-items:center; justify-content:center; }
-    .card { width:360px; padding:24px; background:linear-gradient(180deg,#071022 0%,#08142a 100%); border-radius:12px; box-shadow: 0 6px 24px rgba(2,6,23,0.7); }
-    h1{margin:0 0 12px 0;font-size:20px}
-    input{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);margin-top:10px;background:#071227;color:#fff}
-    button{width:100%;margin-top:14px;padding:10px;border-radius:8px;border:none;background:var(--accent);color:#fff;font-weight:600;cursor:pointer}
-    p.error{color:#ff6b6b;height:20px;margin:8px 0 0}
-    .hint{font-size:12px;color:#94a3b8;margin-top:8px}
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>登入計時器</title>
+    <link rel="stylesheet" href="style.css">
 </head>
-<body>
-  <main class="card" role="main">
-    <h1>登入 — Touch Sensitivity Test</h1>
-    <input id="email" type="email" placeholder="Email (例如 example@domain.com)" autocomplete="username" />
-    <input id="password" type="password" placeholder="密碼" autocomplete="current-password" />
-    <p id="err" class="error"></p>
-    <button id="btn">登入</button>
-    <p class="hint">若剛剛遇到 too-many-requests，請改用無痕/換瀏覽器或等候一段時間。</p>
-  </main>
+<body class="theme-black">
+    <!-- Login Container -->
+    <div id="login-container" class="flex items-center justify-center h-screen w-screen">
+        <div class="login-panel w-full max-w-sm rounded-2xl shadow-xl p-8 text-center">
+            <h1 class="text-3xl font-bold mb-6">登入計時器</h1>
+            <div class="space-y-4">
+                <input type="text" id="username-input" placeholder="帳號" class="login-input w-full p-3 rounded-lg">
+                <input type="password" id="password-input" placeholder="密碼" class="login-input w-full p-3 rounded-lg">
+            </div>
+            <p id="login-error" class="text-red-500 h-6 mt-2 text-sm"></p>
+            <button id="login-btn" class="w-full bg-blue-600 text-white font-bold py-3 px-4 rounded-lg mt-4">登入</button>
+        </div>
+    </div>
 
-  <script type="module">
-    // 請確認路徑對應你的 repo；若 repo 名稱不同請調整 '/touch-sensitivity-test/' 為你的子路徑
-    import { signIn, onAuthStateChange } from '/touch-sensitivity-test/firebase.js';
-
-    const emailInput = document.getElementById('email');
-    const pwdInput = document.getElementById('password');
-    const btn = document.getElementById('btn');
-    const err = document.getElementById('err');
-
-    // 若已登入直接導到 dashboard（避免多次登入步驟）
-    onAuthStateChange(user => {
-      if (user) {
-        // 已登入：導向 dashboard（請確認路徑）
-        window.location.href = '/touch-sensitivity-test/dashboard.html';
-      }
-    });
-
-    btn.addEventListener('click', async () => {
-      err.textContent = '';
-      const email = emailInput.value.trim();
-      const password = pwdInput.value;
-      if (!email || !password) {
-        err.textContent = '請輸入 Email 與密碼';
-        return;
-      }
-      try {
-        await signIn(email, password);
-        // 成功後會由 onAuthStateChange 觸發導向；為確保立即導向，這裡也導一次
-        window.location.href = '/touch-sensitivity-test/dashboard.html';
-      } catch (e) {
-        // 常見錯誤處理
-        if (e.code === 'auth/too-many-requests') {
-          err.textContent = '短時間登入失敗次數過多，請稍後或改用無痕/換瀏覽器。';
-        } else if (e.code === 'auth/user-not-found' || e.code === 'auth/wrong-password') {
-          err.textContent = '帳號或密碼錯誤。';
-        } else {
-          err.textContent = e.message || '登入失敗，請稍後再試。';
-        }
-        console.error(e);
-      }
-    });
-
-    // Enter 鍵可提交
-    [emailInput, pwdInput].forEach(input => {
-      input.addEventListener('keydown', (ev) => {
-        if (ev.key === 'Enter') btn.click();
-      });
-    });
-  </script>
+    <!-- Firebase SDK + JS -->
+    <script type="module" src="firebase.js"></script>
+    <script type="module" src="login.js"></script>
 </body>
 </html>
