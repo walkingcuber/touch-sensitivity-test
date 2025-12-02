@@ -1,61 +1,79 @@
+<!-- index.html -->
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Firebase 登入範例</title>
-    <style>
-        body { font-family: Arial; display: flex; justify-content: center; align-items: center; height: 100vh; background: #f0f0f0; }
-        .login-panel { background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 0 10px rgba(0,0,0,0.2); text-align: center; width: 300px; }
-        input { width: 100%; margin: 0.5rem 0; padding: 0.5rem; border-radius: 6px; border: 1px solid #ccc; }
-        button { width: 100%; padding: 0.5rem; border-radius: 6px; border: none; background: #007bff; color: white; cursor: pointer; }
-        button:hover { background: #0056b3; }
-        #login-error { color: red; height: 1.2rem; margin-top: 0.5rem; }
-    </style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>登入 — Touch Sensitivity Test</title>
+  <style>
+    :root { --bg:#0f172a; --card:#0b1220; --accent:#3b82f6; color-scheme: dark; }
+    body { margin:0; font-family: system-ui,-apple-system, "Noto Sans TC", Arial; background:var(--bg); color:#fff; height:100vh; display:flex; align-items:center; justify-content:center; }
+    .card { width:360px; padding:24px; background:linear-gradient(180deg,#071022 0%,#08142a 100%); border-radius:12px; box-shadow: 0 6px 24px rgba(2,6,23,0.7); }
+    h1{margin:0 0 12px 0;font-size:20px}
+    input{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);margin-top:10px;background:#071227;color:#fff}
+    button{width:100%;margin-top:14px;padding:10px;border-radius:8px;border:none;background:var(--accent);color:#fff;font-weight:600;cursor:pointer}
+    p.error{color:#ff6b6b;height:20px;margin:8px 0 0}
+    .hint{font-size:12px;color:#94a3b8;margin-top:8px}
+  </style>
 </head>
 <body>
-    <div class="login-panel">
-        <h2>登入 Firebase</h2>
-        <input type="email" id="username-input" placeholder="Email">
-        <input type="password" id="password-input" placeholder="密碼">
-        <p id="login-error"></p>
-        <button id="login-btn">登入</button>
-    </div>
+  <main class="card" role="main">
+    <h1>登入 — Touch Sensitivity Test</h1>
+    <input id="email" type="email" placeholder="Email (例如 example@domain.com)" autocomplete="username" />
+    <input id="password" type="password" placeholder="密碼" autocomplete="current-password" />
+    <p id="err" class="error"></p>
+    <button id="btn">登入</button>
+    <p class="hint">若剛剛遇到 too-many-requests，請改用無痕/換瀏覽器或等候一段時間。</p>
+  </main>
 
-    <!-- Firebase 模組 SDK -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
+  <script type="module">
+    // 請確認路徑對應你的 repo；若 repo 名稱不同請調整 '/touch-sensitivity-test/' 為你的子路徑
+    import { signIn, onAuthStateChange } from '/touch-sensitivity-test/firebase.js';
 
-        // Firebase 配置
-        const firebaseConfig = {
-            apiKey: "AIzaSyDZzacZyAXsjPfmDW6lfZYb_DSaShDmkhc",
-            authDomain: "touch-sensitivity-test.firebaseapp.com",
-            projectId: "touch-sensitivity-test",
-            storageBucket: "touch-sensitivity-test.firebasestorage.app",
-            messagingSenderId: "109316982516",
-            appId: "1:109316982516:web:927d96dddb6e171d3580a1",
-            measurementId: "G-3ZPRK4K8RD"
-        };
+    const emailInput = document.getElementById('email');
+    const pwdInput = document.getElementById('password');
+    const btn = document.getElementById('btn');
+    const err = document.getElementById('err');
 
-        // 初始化 Firebase
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
+    // 若已登入直接導到 dashboard（避免多次登入步驟）
+    onAuthStateChange(user => {
+      if (user) {
+        // 已登入：導向 dashboard（請確認路徑）
+        window.location.href = '/touch-sensitivity-test/dashboard.html';
+      }
+    });
 
-        // 登入事件
-        document.getElementById('login-btn').addEventListener('click', async () => {
-            const email = document.getElementById('username-input').value;
-            const password = document.getElementById('password-input').value;
-            const errorElem = document.getElementById('login-error');
+    btn.addEventListener('click', async () => {
+      err.textContent = '';
+      const email = emailInput.value.trim();
+      const password = pwdInput.value;
+      if (!email || !password) {
+        err.textContent = '請輸入 Email 與密碼';
+        return;
+      }
+      try {
+        await signIn(email, password);
+        // 成功後會由 onAuthStateChange 觸發導向；為確保立即導向，這裡也導一次
+        window.location.href = '/touch-sensitivity-test/dashboard.html';
+      } catch (e) {
+        // 常見錯誤處理
+        if (e.code === 'auth/too-many-requests') {
+          err.textContent = '短時間登入失敗次數過多，請稍後或改用無痕/換瀏覽器。';
+        } else if (e.code === 'auth/user-not-found' || e.code === 'auth/wrong-password') {
+          err.textContent = '帳號或密碼錯誤。';
+        } else {
+          err.textContent = e.message || '登入失敗，請稍後再試。';
+        }
+        console.error(e);
+      }
+    });
 
-            try {
-                const userCredential = await signInWithEmailAndPassword(auth, email, password);
-                alert("登入成功！");
-                window.location.href = "dashboard.html"; // 登入成功跳轉到後台
-            } catch (error) {
-                errorElem.textContent = error.message;
-            }
-        });
-    </script>
+    // Enter 鍵可提交
+    [emailInput, pwdInput].forEach(input => {
+      input.addEventListener('keydown', (ev) => {
+        if (ev.key === 'Enter') btn.click();
+      });
+    });
+  </script>
 </body>
 </html>
