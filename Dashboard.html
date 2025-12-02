@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>後台儀表板</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
+        import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDZzacZyAXsjPfmDW6lfZYb_DSaShDmkhc",
+            authDomain: "touch-sensitivity-test.firebaseapp.com",
+            projectId: "touch-sensitivity-test",
+            storageBucket: "touch-sensitivity-test.firebasestorage.app",
+            messagingSenderId: "109316982516",
+            appId: "1:109316982516:web:927d96dddb6e171d3580a1",
+            measurementId: "G-3ZPRK4K8RD"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        onAuthStateChanged(auth, (user) => {
+            if (!user) {
+                window.location.href = "/touch-sensitivity-test/index.html";
+            } else {
+                document.getElementById("user-email").innerText = user.email;
+                loadData();
+            }
+        });
+
+        async function loadData() {
+            const table = document.getElementById("data-table");
+            const querySnapshot = await getDocs(collection(db, "records"));
+            table.innerHTML = "";
+
+            querySnapshot.forEach((doc) => {
+                const data = doc.data();
+                const row = `
+                    <tr class='border-b'>
+                        <td class='p-3'>${doc.id}</td>
+                        <td class='p-3'>${data.value ?? "N/A"}</td>
+                        <td class='p-3'>${data.timestamp ?? "N/A"}</td>
+                    </tr>
+                `;
+                table.innerHTML += row;
+            });
+        }
+
+        window.logout = function () {
+            signOut(auth).then(() => {
+                window.location.href = "/touch-sensitivity-test/index.html";
+            });
+        };
+    </script>
+</head>
+
+<body class="bg-gray-100 min-h-screen p-6">
+    <div class="max-w-4xl mx-auto bg-white shadow-lg rounded-xl p-6">
+        <h1 class="text-3xl font-bold mb-4">後台儀表板</h1>
+
+        <div class="flex justify-between items-center mb-6">
+            <p class="text-gray-700">登入中：<span id="user-email" class="font-bold"></span></p>
+            <button onclick="logout()" class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600">登出</button>
+        </div>
+
+        <h2 class="text-xl font-bold mb-3">資料紀錄（Firestore）</h2>
+
+        <div class="overflow-x-auto">
+            <table class="w-full bg-gray-50 rounded-lg overflow-hidden">
+                <thead class="bg-gray-200">
+                    <tr>
+                        <th class="p-3 text-left">ID</th>
+                        <th class="p-3 text-left">Value</th>
+                        <th class="p-3 text-left">Timestamp</th>
+                    </tr>
+                </thead>
+                <tbody id="data-table"></tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>
