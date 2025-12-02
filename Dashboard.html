@@ -1,124 +1,13 @@
-<!-- dashboard.html -->
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Dashboard — Touch Sensitivity Test</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    body { background:#f8fafc; color:#0f172a; font-family:Noto Sans TC,system-ui,Arial; padding:28px; }
-    .card{background:#fff;border-radius:12px;padding:18px;box-shadow:0 6px 20px rgba(2,6,23,0.06)}
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard</title>
 </head>
 <body>
-  <div class="max-w-5xl mx-auto">
-    <div class="flex justify-between items-center mb-6">
-      <h1 class="text-2xl font-semibold">後台儀表板</h1>
-      <div>
-        <span class="text-sm text-gray-600 mr-4">登入中：<strong id="user-email">-</strong></span>
-        <button id="logout" class="px-3 py-2 bg-red-500 text-white rounded">登出</button>
-      </div>
-    </div>
-
-    <div class="card mb-6">
-      <h2 class="text-lg font-medium mb-3">新增紀錄（示範用）</h2>
-      <div class="flex gap-2">
-        <input id="new-value" class="flex-1 border rounded px-3 py-2" placeholder="輸入 value（例如 123）" />
-        <button id="add" class="px-4 py-2 bg-blue-600 text-white rounded">新增</button>
-      </div>
-      <p id="op-msg" class="text-sm text-gray-500 mt-2"></p>
-    </div>
-
-    <div class="card">
-      <h2 class="text-lg font-medium mb-3">Firestore — records（最新顯示）</h2>
-      <div class="overflow-x-auto">
-        <table class="min-w-full border-collapse">
-          <thead class="bg-gray-50">
-            <tr>
-              <th class="text-left p-3 border-b">ID</th>
-              <th class="text-left p-3 border-b">Value</th>
-              <th class="text-left p-3 border-b">Created At</th>
-            </tr>
-          </thead>
-          <tbody id="table-body"></tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-
-  <script type="module">
-    // 請確認路徑對應你的 repo；若 repo 名稱不同請調整 '/touch-sensitivity-test/firebase.js'
-    import { auth, onAuthStateChange, signOut, getRecords, addRecord } from '/touch-sensitivity-test/firebase.js';
-
-    const userEmailElem = document.getElementById('user-email');
-    const logoutBtn = document.getElementById('logout');
-    const tableBody = document.getElementById('table-body');
-    const addBtn = document.getElementById('add');
-    const newValueInput = document.getElementById('new-value');
-    const opMsg = document.getElementById('op-msg');
-
-    // 保護路由：若未登入，導回登入頁
-    onAuthStateChange(user => {
-      if (!user) {
-        // 未登入 → 回到首頁
-        window.location.href = '/touch-sensitivity-test/index.html';
-      } else {
-        userEmailElem.textContent = user.email;
-        loadTable();
-      }
-    });
-
-    logoutBtn.addEventListener('click', async () => {
-      try {
-        await signOut();
-        window.location.href = '/touch-sensitivity-test/index.html';
-      } catch (e) {
-        console.error(e);
-        alert('登出失敗');
-      }
-    });
-
-    // 載入 records 並顯示
-    async function loadTable() {
-      tableBody.innerHTML = '<tr><td class="p-3" colspan="3">載入中…</td></tr>';
-      try {
-        const rows = await getRecords();
-        if (!rows.length) {
-          tableBody.innerHTML = '<tr><td class="p-3" colspan="3">目前無資料</td></tr>';
-          return;
-        }
-        // 依 createdAt 排序（若 available）
-        rows.sort((a,b) => {
-          const ta = a.createdAt?.seconds || 0;
-          const tb = b.createdAt?.seconds || 0;
-          return tb - ta;
-        });
-        tableBody.innerHTML = rows.map(r => {
-          const created = r.createdAt ? new Date(r.createdAt.seconds * 1000).toLocaleString() : '-';
-          return `<tr class="border-b"><td class="p-3">${r.id}</td><td class="p-3">${(r.value!==undefined)?r.value:'-'}</td><td class="p-3">${created}</td></tr>`;
-        }).join('');
-      } catch (e) {
-        console.error(e);
-        tableBody.innerHTML = '<tr><td class="p-3" colspan="3">讀取失敗</td></tr>';
-      }
-    }
-
-    // 新增紀錄（示範）
-    addBtn.addEventListener('click', async () => {
-      const v = newValueInput.value.trim();
-      if (!v) { opMsg.textContent = '請先輸入 value'; return; }
-      opMsg.textContent = '新增中…';
-      try {
-        await addRecord({ value: v, createdBy: auth.currentUser?.email || 'unknown' });
-        opMsg.textContent = '新增完成';
-        newValueInput.value = '';
-        await loadTable();
-      } catch (e) {
-        console.error(e);
-        opMsg.textContent = '新增失敗';
-      }
-    });
-  </script>
+<h1>後台儀表板</h1>
+<p>你已成功登入！</p>
+<script type="module" src="./Firebase.Js"></script>
 </body>
 </html>
