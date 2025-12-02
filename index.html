@@ -1,21 +1,28 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>登入</title>
-<link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>登入 — Touch Sensitivity Test</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body class="theme-black">
-    <div id="login-container">
-        <div class="login-panel">
-            <h1>登入計時器</h1>
-            <input type="text" id="username-input" placeholder="帳號">
-            <input type="password" id="password-input" placeholder="密碼">
-            <p id="login-error"></p>
-            <button id="login-btn">登入</button>
+    <!-- Login Container -->
+    <div id="login-container" class="flex items-center justify-center h-screen w-screen">
+        <div class="login-panel w-full max-w-sm rounded-2xl shadow-xl p-8 text-center">
+            <h1 class="text-3xl font-bold mb-6">登入計時器</h1>
+            <div class="space-y-4">
+                <input type="text" id="username-input" placeholder="帳號" class="login-input w-full p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <input type="password" id="password-input" placeholder="密碼" class="login-input w-full p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+            <p id="login-error" class="text-red-500 h-6 mt-2 text-sm"></p>
+            <button id="login-btn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition mt-4">登入</button>
         </div>
     </div>
-    <script type="module" src="logging.js"></script>
+
+    <!-- Firebase -->
+    <script type="module" src="Firebase.Js"></script>
+    <!-- Login -->
+    <script src="logging.js"></script>
 </body>
 </html>
