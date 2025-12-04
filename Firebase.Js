@@ -1,17 +1,18 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
-import { getAuth } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
+import { auth } from "./Firebase.Js";
+import { signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
-// Firebase 設定
-export const firebaseConfig = {
-    apiKey: "AIzaSyDZzacZyAXsjPfmDW6lfZYb_DSaShDmkhc",
-    authDomain: "touch-sensitivity-test.firebaseapp.com",
-    projectId: "touch-sensitivity-test",
-    storageBucket: "touch-sensitivity-test.appspot.com",
-    messagingSenderId: "109316982516",
-    appId: "1:109316982516:web:927d96dddb6e171d3580a1"
-};
+document.getElementById("loginBtn").addEventListener("click", () => {
 
-// 初始化 Firebase
-export const app = initializeApp(firebaseConfig);
-export const auth = getAuth(app);
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
 
+    signInWithEmailAndPassword(auth, email, password)
+        .then(() => {
+            alert("登入成功");
+            window.location.href = "Dashboard.html";
+        })
+        .catch((err) => {
+            console.error(err);
+            alert("登入失敗：" + err.message);
+        });
+});
