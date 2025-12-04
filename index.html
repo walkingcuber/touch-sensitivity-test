@@ -1,66 +1,9 @@
-<!DOCTYPE html>
-<html lang="zh-Hant">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>登入 — Touch Sensitivity Test</title>
-    <style>
-        body {
-            background-color: #111;
-            color: #fff;
-            font-family: 'Microsoft JhengHei', sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-        }
-        .login-panel {
-            background: #222;
-            padding: 40px;
-            border-radius: 20px;
-            box-shadow: 0 0 20px #000;
-            text-align: center;
-            width: 300px;
-        }
-        .login-panel input {
-            width: 100%;
-            padding: 10px;
-            margin: 10px 0;
-            border-radius: 10px;
-            border: none;
-            outline: none;
-        }
-        #login-btn {
-            width: 100%;
-            padding: 10px;
-            background: #007bff;
-            color: #fff;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-        }
-        #login-btn:hover {
-            background: #0056b3;
-        }
-        #login-error {
-            color: #ff4d4f;
-            height: 20px;
-            margin-top: 5px;
-        }
-    </style>
-</head>
-<body>
-    <div class="login-panel">
-        <h1>登入計時器</h1>
-        <input type="text" id="username-input" placeholder="帳號">
-        <input type="password" id="password-input" placeholder="密碼">
-        <p id="login-error"></p>
-        <button id="login-btn">登入</button>
-    </div>
-
-    <!-- Firebase & 登入 JS -->
-    <script type="module" src="Firebase.Js"></script>
-    <script type="module" src="logging.js"></script>
-</body>
-</html>
+<!DOCTYPE html><html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">  
+<title>Test Login</title>  
+</head><body>  
+  <input id="email" type="email" placeholder="Email">  
+  <input id="password" type="password" placeholder="Password">  
+  <button id="loginBtn">登入</button>  
+  <script type="module" src="Firebase.Js"></script>  
+  <script type="module" src="logging.js"></script>  
+</body></html>
