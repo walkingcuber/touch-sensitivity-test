@@ -1,18 +1,22 @@
-import { auth } from "./Firebase.Js";
-import { signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+// Firebase.Js  (注意大寫 J、小寫 s)
 
-document.getElementById("loginBtn").addEventListener("click", () => {
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("password").value;
+const firebaseConfig = {
+    apiKey: "AIzaSyDZzacZyAXsjPfmDW6lfZYb_DSaShDmkhc",
+    authDomain: "touch-sensitivity-test.firebaseapp.com",
+    projectId: "touch-sensitivity-test",
+    storageBucket: "touch-sensitivity-test.firebasestorage.app",
+    messagingSenderId: "109316982516",
+    appId: "1:109316982516:web:927d96dddb6e171d3580a1"
+};
 
-    signInWithEmailAndPassword(auth, email, password)
-        .then(() => {
-            alert("登入成功");
-            window.location.href = "Dashboard.html";
-        })
-        .catch((err) => {
-            console.error(err);
-            alert("登入失敗：" + err.message);
-        });
-});
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+
+// Initialize Auth
+const auth = getAuth(app);
+
+// 讓其他 JS 能 import 這些功能
+export { auth };
