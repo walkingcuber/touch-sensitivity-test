@@ -1,33 +1,41 @@
 // logging.js
-
 import { auth } from "./Firebase.Js";
-import { signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { 
+  signInWithEmailAndPassword
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-// 確保 DOM 已載入
-document.addEventListener("DOMContentLoaded", () => {
+window.addEventListener("DOMContentLoaded", () => {
 
+    const emailInput = document.getElementById("emailInput");
+    const passwordInput = document.getElementById("passwordInput");
     const loginBtn = document.getElementById("loginBtn");
-    const emailInput = document.getElementById("email");
-    const passwordInput = document.getElementById("password");
-    const errorText = document.getElementById("login-error");
+    const statusText = document.getElementById("status");
 
-    loginBtn.addEventListener("click", () => {
+    if (!loginBtn) {
+        console.error("loginBtn 不存在，請檢查 index.html");
+        return;
+    }
 
-        const email = emailInput.value;
+    loginBtn.addEventListener("click", async () => {
+        const email = emailInput.value.trim();
         const password = passwordInput.value;
-        errorText.textContent = "";
 
-        if (!email || !password) {
-            errorText.textContent = "請輸入帳號與密碼！";
-            return;
-        }
+        try {
+            const result = await signInWithEmailAndPassword(auth, email, password);
 
-        signInWithEmailAndPassword(auth, email, password)
-            .then(() => {
+            statusText.textContent = "登入成功，正在前往 Dashboard...";
+            statusText.style.color = "green";
+
+            // ⭐⭐⭐⭐⭐ 登入成功 → 轉跳到 Dashboard.html ⭐⭐⭐⭐⭐
+            setTimeout(() => {
                 window.location.href = "Dashboard.html";
-            })
-            .catch(err => {
-                errorText.textContent = err.message;
-            });
+            }, 600);
+
+        } catch (err) {
+            console.error(err);
+            statusText.textContent = "登入失敗：" + err.code;
+            statusText.style.color = "red";
+        }
     });
+
 });
