@@ -1,17 +1,17 @@
 // logging.js
-import { auth } from "./Firebase.Js";
-import { signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
+import { auth } from "./firebase.js";
+import { signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
 
 const loginForm = document.getElementById("login-form");
 const timerSection = document.getElementById("timer-section");
 
+// 登入按鈕
 document.getElementById("login-btn").addEventListener("click", () => {
     const email = document.getElementById("email").value;
     const password = document.getElementById("password").value;
 
     signInWithEmailAndPassword(auth, email, password)
         .then(() => {
-            // 登入成功 → 顯示計時器、隱藏登入表單
             loginForm.style.display = "none";
             timerSection.style.display = "block";
         })
@@ -20,9 +20,12 @@ document.getElementById("login-btn").addEventListener("click", () => {
         });
 });
 
+// 登出按鈕
 document.getElementById("logout-btn").addEventListener("click", () => {
-    auth.signOut().then(() => {
+    signOut(auth).then(() => {
         loginForm.style.display = "block";
         timerSection.style.display = "none";
+    }).catch((error) => {
+        alert("登出失敗：" + error.message);
     });
 });
